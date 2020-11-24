@@ -14,6 +14,15 @@
         <!-- TODO: Add autosave -->
         <div>
           <button
+            *ngIf="hasReadWriteAccess"
+            (click)="saveFile()"
+            mat-icon-button
+            matTooltip="Manual Save"
+            matTooltipPosition="below"
+          >
+          <mat-icon>save</mat-icon>
+        </button>
+          <button
             *ngIf="project.owner._id == currentUser._id"
             (click)="openInviteCollaboratorsDialog()"
             mat-icon-button

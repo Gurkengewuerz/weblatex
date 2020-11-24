@@ -107,7 +107,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   latexErrorLog: string;
   mainLatexError: string;
   showErrorLog = false;
-  autoCompile = true;
+  autoCompile = false;
   compiling = false;
   colourHandler = new ColourHandler();
   liveCollaborators: LiveCollaborator[] = [];
@@ -121,6 +121,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   onActiveUserIdsInProjectSessionSubscription: Subscription;
   onProjectChangeSubscription: Subscription;
   onProjectAvailabilityChangeSubscription: Subscription;
+  typingTimer: any;
   get mainFile() {
     return this.displayFiles.find((displayFile) => displayFile.isMain);
   }
@@ -162,13 +163,22 @@ export class ProjectComponent implements OnInit, OnDestroy {
     return displayFile;
   }
 
-  private updateLatex = (
+  private updateLatexSocket = (
     editor: CodeMirror.Editor,
     change: CodeMirror.EditorChange
   ) => {
     if (change.origin != "setValue" && this.hasReadWriteAccess) {
       const newContents = editor.getValue();
       this.socketService.notifyFileContentsChange(this.projectId, newContents);
+    }
+  };
+
+  private updateLatexRemote = (
+    editor: CodeMirror.Editor,
+    change: CodeMirror.EditorChange
+  ) => {
+    if (change.origin != "setValue" && this.hasReadWriteAccess) {
+      const newContents = editor.getValue();
       this.projectService
         .replaceFileContents(this.projectId, this.mainFile._id, newContents)
         .toPromise()
@@ -208,7 +218,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
           new Response(fileStream).text().then((text) => {
             this.editor.codeMirror.setValue(text);
             this.editor.codeMirror.setSize("100%", "100%");
-            this.editor.codeMirror.on("change", this.updateLatex);
+            this.editor.codeMirror.on("change", this.updateLatexSocket);
+            this.editor.codeMirror.on("keyup", (editor: CodeMirror.Editor) => {
+              clearTimeout(this.typingTimer);
+              this.typingTimer = setTimeout(() => this.saveFile(), 2000);
+            });
+            this.editor.codeMirror.on("keydown", (editor: CodeMirror.Editor) =>
+              clearTimeout(this.typingTimer)
+            );
             this.editor.codeMirror.on("cursorActivity", this.onCursorActivity);
             this.compilePdf();
           });
@@ -586,6 +603,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
       });
   }
 
+  saveFile() {
+    this.updateLatexRemote(this.editor.codeMirror, <CodeMirror.EditorChange>{
+      origin: "change",
+    });
+  }
+
   trackFile(index: number, displayFile: DisplayFile) {
     return displayFile._id;
   }
@@ -599,7 +622,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
         .getOutputFile(this.projectId)
         .toPromise()
         .then((outputPdf) => {
-          this.pdfViewer.nativeElement.src = window.URL.createObjectURL(outputPdf);
+          this.pdfViewer.nativeElement.src = window.URL.createObjectURL(
+            outputPdf
+          );
         })
         .catch((err) => {
           new Response(err.error).text().then((text) => {

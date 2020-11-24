@@ -27,8 +27,7 @@
 
 ## TODO
 
-- auto-save
-- make other text files editable
+- make other text files editable/viewable
 ## License
 
 [MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).  
