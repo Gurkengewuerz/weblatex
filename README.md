@@ -5,22 +5,10 @@
 </p>
 
 <h1 align="center">
-  <a href="https://cooperatex.me">CooperaTeX</a>
+  WebLaTex
 </h1>
 
 > A web app to collaborate with other users and edit LaTeX documents (featuring real-time compilation, templates and more).
-
-<h2>Table of Contents</h2>
-
-- [Demo](#demo)
-- [Features](#features)
-- [Documentation](#documentation)
-- [Contributors](#contributors)
-- [License](#license)
-
-## Demo
-
-[![CooperaTeX Demo](demo-thumbnail.jpg)](https://youtu.be/YQSpjoTv2oI "CooperaTeX Demo")
 
 ## Features
 
@@ -28,19 +16,16 @@
 - Collaborate and edit LaTeX documents in real-time.
 - Share projects with any amount of users.
 - Choose between a range of different starting templates.
+- Auto-Save every few seconds.
 
-## Documentation
+## Changes
 
-Documentation for the REST API as well as the WebSocket API.
-
-[**Documentation URL**](https://github.com/pravinthan/cooperatex/wiki/Documentation)
-
-## Contributors
-
-This project was made in collaboration with [Thomas Lo](https://github.com/tommy-lo)
+- Removed S3 Storage and added LocalDisk provider (it is possible to add other providers)
+- Removed MongoDB and use LowDB as database backend
+- Added auto-save feature (files got saved with every change on typing)
 
 ## License
 
-[MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).
-
-[MIT](./LICENSE) &copy; [Thomas Lo](https://github.com/tommy-lo).
+[MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).  
+[MIT](./LICENSE) &copy; [Thomas Lo](https://github.com/tommy-lo).  
+[MIT](./LICENSE) &copy; [Gurkengewuerz](https://www.gurkengewuerz.de/).  

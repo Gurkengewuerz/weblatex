@@ -1,26 +1,20 @@
 require("dotenv").config();
-let http = require("http");
-let path = require("path");
-let cors = require("cors");
-let express = require("express");
-let bodyParser = require("body-parser");
-let mongoose = require("mongoose");
-let passport = require("passport");
-let socketIO = require("socket.io");
-let jwtAuth = require("socketio-jwt-auth");
-require("./models/project");
-require("./models/user");
+const http = require("http");
+const path = require("path");
+const cors = require("cors");
+const express = require("express");
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const socketIO = require("socket.io");
+const jwtAuth = require("socketio-jwt-auth");
 require("./config/passport");
-let User = mongoose.model("User");
-let apiRoute = require("./routes/index");
-let app = express();
+const db = require("./database");
+const apiRoute = require("./routes/index");
+const app = express();
 
-if (process.env.PORT) {
-  app.use(express.static(path.join(__dirname, "../dist/cooperatex")));
-  app.get("/*", (req, res) => res.sendFile(path.join(__dirname)));
-} else {
-  app.use(cors());
-}
+app.use(express.static(path.join(__dirname, "../dist/cooperatex")));
+app.get("/*", (req, res) => res.sendFile(path.join(__dirname)));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
@@ -38,20 +32,11 @@ app.use((err, req, res, next) => {
   }
 });
 
-mongoose.connect(process.env.DB_URI || "mongodb://localhost/cooperatex", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
-mongoose.connection.on(
-  "error",
-  console.error.bind(console, "MongoDB connection error:")
-);
-
 const server = http.createServer(app);
-const port = process.env.PORT || 4201;
-server.listen(port, () =>
-  console.log(`Server running on: http://localhost:${port}`)
+const port = process.env.HTTP_PORT || 4201;
+const host = process.env.HTTP_HOST || "::";
+server.listen(port, host, () =>
+  console.log(`Server running on: http://${host}:${port}`)
 );
 
 const io = socketIO(server);
@@ -59,11 +44,14 @@ const io = socketIO(server);
 // Authentication middleware
 io.use(
   jwtAuth.authenticate({ secret: process.env.JWT_SECRET }, (payload, done) => {
-    User.findById(payload._id, (err, user) => {
-      if (err) return done(err);
+    try {
+      const user = db.get("user").find({ _id: payload._id }).value();
+      
       if (!user) return done(null, false, "User does not exist");
       return done(null, { _id: user._id, username: user.username });
-    });
+    } catch (err) {
+      return done(err);
+    }
   })
 );
 

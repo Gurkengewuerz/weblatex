@@ -49,3 +49,6 @@ uploads
 
 .env
 prod.env
+
+db.json
+data/

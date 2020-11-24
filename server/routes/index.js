@@ -1,43 +1,27 @@
-let express = require("express");
-let router = express.Router();
-let path = require("path");
-let { param, body } = require("express-validator");
-let jwt = require("express-jwt");
-let multer = require("multer");
-let multerS3 = require("multer-s3");
-let aws = require("aws-sdk");
-aws.config.update({
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  accessKeyId: process.env.S3_ACCESS_KEY_ID,
-  region: process.env.S3_BUCKET_REGION,
-});
-let s3 = new aws.S3();
-let auth = jwt({ secret: process.env.JWT_SECRET });
-const fileFilter = (req, file, callback) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "application/x-tex" ||
-    file.mimetype === "application/x-latex" ||
-    file.mimetype === "application/octet-stream"
-  )
-    callback(null, true);
-  else callback(null, false);
-};
-let upload = multer({
-  storage: multerS3({
-    s3,
-    bucket: process.env.S3_BUCKET_NAME,
-    key: (req, file, cb) => {
-      cb(null, `${req.params.id}/${file.originalname}`);
-    },
-  }),
-  fileFilter: fileFilter,
+const express = require("express");
+const router = express.Router();
+const { param, body } = require("express-validator");
+const jwt = require("express-jwt");
+const multer = require("multer");
+const auth = jwt({ secret: process.env.JWT_SECRET });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, callback) => {
+    if (
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "application/x-tex" ||
+      file.mimetype === "application/x-latex" ||
+      file.mimetype === "application/octet-stream"
+    )
+      callback(null, true);
+    else callback(null, false);
+  },
   limits: { fileSize: 1024 * 1024 * 20 },
 });
 
-let authenticationController = require("../controllers/authentication");
-let projectController = require("../controllers/project");
+const authenticationController = require("../controllers/authentication");
+const projectController = require("../controllers/project");
 
 // Authentication
 router.post(
@@ -89,7 +73,7 @@ router.get(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveProjectById
@@ -101,7 +85,7 @@ router.delete(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.deleteProjectById
@@ -113,7 +97,7 @@ router.post(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   upload.array("files"),
@@ -126,7 +110,7 @@ router.get(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveAllFiles
@@ -138,12 +122,12 @@ router.get(
     param("projectId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     param("fileId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveFile
@@ -155,12 +139,12 @@ router.delete(
     param("projectId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     param("fileId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.deleteFile
@@ -172,12 +156,12 @@ router.patch(
     param("projectId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     param("fileId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     body("operation")
       .exists({ checkNull: true, checkFalsy: true })
@@ -197,7 +181,7 @@ router.get(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveOutputPdf
@@ -209,7 +193,7 @@ router.get(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveSourceFiles
@@ -221,7 +205,7 @@ router.get(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.retrieveCollaborators
@@ -233,7 +217,7 @@ router.post(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     body("username")
       .exists({ checkNull: true, checkFalsy: true })
@@ -252,12 +236,12 @@ router.delete(
     param("projectId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     param("userId")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
   ],
   projectController.removeCollaborator
@@ -269,7 +253,7 @@ router.patch(
     param("id")
       .exists({ checkNull: true, checkFalsy: true })
       .trim()
-      .isMongoId()
+      .isUUID()
       .escape(),
     body("operation")
       .exists({ checkNull: true, checkFalsy: true })

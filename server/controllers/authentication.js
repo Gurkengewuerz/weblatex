@@ -1,25 +1,35 @@
-let passport = require("passport");
-let { validationResult } = require("express-validator");
-let mongoose = require("mongoose");
-let User = mongoose.model("User");
+const passport = require("passport");
+const { validationResult } = require("express-validator");
+const crypto = require("crypto");
+const { v4: uuidv4 } = require("uuid");
+const db = require("../database");
+const { hashPassword, generateJWT } = require("../models/user");
 
 module.exports.signUp = (req, res) => {
   if (validationResult(req).array().length > 0) return res.sendStatus(400);
 
-  User.findOne({ username: req.body.username })
-    .then((user) => {
-      if (user)
-        return res
-          .status(409)
-          .send(`Username ${req.body.username} already exists`);
+  try {
+    const user = db.get("user").find({ username: req.body.username }).value();
 
-      let newUser = new User();
-      newUser.username = req.body.username;
-      newUser.setPassword(req.body.password);
+    if (user)
+      return res
+        .status(409)
+        .send(`Username ${req.body.username} already exists`);
 
-      newUser.save((err) => res.json({ token: newUser.generateJWT() }));
-    })
-    .catch((err) => res.sendStatus(500));
+    const salt = crypto.randomBytes(16).toString("hex");
+    const newUser = {
+      _id: uuidv4(),
+      username: req.body.username,
+      salt,
+      hash: hashPassword(req.body.password, salt),
+    };
+
+    db.get("user").push(newUser).write();
+
+    res.json({ token: generateJWT(newUser) });
+  } catch (err) {
+    res.sendStatus(500);
+  }
 };
 
 module.exports.signIn = (req, res) => {
@@ -29,6 +39,6 @@ module.exports.signIn = (req, res) => {
     if (err) return res.status(500).send(err);
     if (!user) return res.status(401).send(info);
 
-    res.json({ token: user.generateJWT() });
+    res.json({ token: generateJWT(user) });
   })(req, res);
 };

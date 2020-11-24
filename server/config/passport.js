@@ -1,18 +1,20 @@
-let passport = require("passport");
-let LocalStrategy = require("passport-local").Strategy;
-let mongoose = require("mongoose");
-let User = mongoose.model("User");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const db = require("../database");
+const { isValidPassword } = require("../models/user");
 
 passport.use(
   new LocalStrategy({}, (username, password, done) => {
-    User.findOne({ username: username })
-      .then((user) => {
-        if (!user) return done(null, false, "User was not found");
-        if (!user.isValidPassword(password))
-          return done(null, false, "Password was incorrect");
+    try {
+      const user = db.get("user").find({ username: username }).value();
 
-        return done(null, user);
-      })
-      .catch((err) => done(err));
+      if (!user) return done(null, false, "User was not found");
+      if (!isValidPassword(user.hash, password, user.salt))
+        return done(null, false, "Password was incorrect");
+
+      return done(null, user);
+    } catch (error) {
+      done(err);
+    }
   })
 );
