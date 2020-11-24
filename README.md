@@ -24,6 +24,11 @@
 - Removed MongoDB and use LowDB as database backend
 - Added auto-save feature (files got saved with every change on typing)
 
+
+## TODO
+
+- auto-save
+- make other text files editable
 ## License
 
 [MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).  

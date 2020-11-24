@@ -236,11 +236,8 @@ ngx-codemirror {
   border-color: white;
 }
 
-ng2-pdfjs-viewer {
-  height: 100%;
-}
 
-::ng-deep ng2-pdfjs-viewer > iframe {
+iframe {
   border: none;
 }
 

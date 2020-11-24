@@ -5,6 +5,7 @@ import {
   HostListener,
   OnDestroy,
   Inject,
+  ElementRef,
 } from "@angular/core";
 import { ProjectService } from "src/app/shared/project.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -15,7 +16,6 @@ import { DownloadFilesDialogComponent } from "./download-files-dialog/download-f
 import { ActivatedRoute, Router } from "@angular/router";
 import { Project } from "src/app/shared/models/project.model";
 import { MulterFile } from "src/app/shared/models/multer-file.model";
-import { PdfJsViewerComponent } from "ng2-pdfjs-viewer";
 import { CodemirrorComponent } from "@ctrl/ngx-codemirror";
 import { InviteCollaboratorsDialogComponent } from "./invite-collaborators-dialog/invite-collaborators-dialog.component";
 import { SocketService } from "src/app/shared/socket.service";
@@ -98,7 +98,7 @@ class CollaboratorSelection {
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   @ViewChild("editor") editor: CodemirrorComponent;
-  @ViewChild("pdfViewer") pdfViewer: PdfJsViewerComponent;
+  @ViewChild("pdfViewer") pdfViewer: ElementRef;
   currentUser = this.authenticationService.currentUser;
   projectId: string;
   project: Project;
@@ -599,8 +599,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         .getOutputFile(this.projectId)
         .toPromise()
         .then((outputPdf) => {
-          this.pdfViewer.pdfSrc = outputPdf;
-          this.pdfViewer.refresh();
+          this.pdfViewer.nativeElement.src = window.URL.createObjectURL(outputPdf);
         })
         .catch((err) => {
           new Response(err.error).text().then((text) => {

@@ -11,6 +11,7 @@
               (project.title | truncate: (hasReadWriteAccess ? 10 : 8))
           }}</span
         >
+        <!-- TODO: Add autosave -->
         <div>
           <button
             *ngIf="project.owner._id == currentUser._id"
@@ -166,13 +167,11 @@
             </mat-checkbox>
           </div>
         </div>
-        <ng2-pdfjs-viewer
+        <iframe
           #pdfViewer
-          [hidden]="latexErrorLog"
-          [openFile]="false"
-          [viewBookmark]="false"
-          [download]="false"
-        ></ng2-pdfjs-viewer>
+          [src]=""
+          height="100%"
+        ></iframe>
         <div *ngIf="latexErrorLog" id="error-container">
           <div id="error-header">
             <mat-icon>error</mat-icon>

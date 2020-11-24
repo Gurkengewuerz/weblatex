@@ -20,7 +20,6 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { CodemirrorModule } from "@ctrl/ngx-codemirror";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { PdfJsViewerModule } from "ng2-pdfjs-viewer";
 import { MatSelectModule } from "@angular/material/select";
 import { MatBadgeModule } from "@angular/material/badge";
 import { MatRadioModule } from "@angular/material/radio";
@@ -97,7 +96,6 @@ import { DownloadFilesDialogComponent } from './components/pages/project/downloa
     MatTooltipModule,
     CodemirrorModule,
     MatCheckboxModule,
-    PdfJsViewerModule,
     MatSelectModule,
     MatBadgeModule,
     MatRadioModule
