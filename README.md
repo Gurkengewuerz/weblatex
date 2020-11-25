@@ -27,7 +27,8 @@
 
 ## TODO
 
-- make other text files editable/viewable
+- make other text files editable/viewable with collaboration function
+- hook on CTRL+S and call `saveFile()`
 ## License
 
 [MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).  

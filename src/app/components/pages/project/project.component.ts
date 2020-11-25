@@ -122,6 +122,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   onProjectChangeSubscription: Subscription;
   onProjectAvailabilityChangeSubscription: Subscription;
   typingTimer: any;
+  saveStatus = "lightgreen";
   get mainFile() {
     return this.displayFiles.find((displayFile) => displayFile.isMain);
   }
@@ -168,6 +169,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     change: CodeMirror.EditorChange
   ) => {
     if (change.origin != "setValue" && this.hasReadWriteAccess) {
+      this.saveStatus = "red";
       const newContents = editor.getValue();
       this.socketService.notifyFileContentsChange(this.projectId, newContents);
     }
@@ -178,6 +180,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     change: CodeMirror.EditorChange
   ) => {
     if (change.origin != "setValue" && this.hasReadWriteAccess) {
+      this.saveStatus = "lightgreen";
       const newContents = editor.getValue();
       this.projectService
         .replaceFileContents(this.projectId, this.mainFile._id, newContents)
