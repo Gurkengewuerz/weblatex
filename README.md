@@ -12,17 +12,17 @@
 
 ## Features
 
-- Automatically compiles LaTeX documents into PDFs as you edit.
-- Collaborate and edit LaTeX documents in real-time.
-- Share projects with any amount of users.
-- Choose between a range of different starting templates.
-- Auto-Save every few seconds.
+- 📜 Automatically compiles LaTeX documents into PDFs as you edit.
+- ✨ Collaborate and edit LaTeX documents in real-time.
+- 🤝 Share projects with any amount of users.
+- 📝 Choose between a range of different starting templates.
+- 💾 Auto-Save every few seconds.
 
 ## Changes
 
 - Removed S3 Storage and added LocalDisk provider (it is possible to add other providers)
 - Removed MongoDB and use LowDB as database backend
-- Added auto-save feature (files got saved with every change on typing)
+- Added auto-save feature (files were previously saved with every change when typing)
 
 
 ## TODO
