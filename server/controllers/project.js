@@ -178,7 +178,9 @@ module.exports.uploadFiles = async (req, res) => {
     }
 
     for (let i = 0; i < req.files.length; i++) {
-      project.files.push({ ...req.files[i], isMain: false, _id: uuidv4() });
+      const x = { ...req.files[i], isMain: false, _id: uuidv4() };
+      delete x.buffer;
+      project.files.push(x);
     }
 
     db.get("project")
