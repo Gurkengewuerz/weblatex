@@ -30,6 +30,7 @@
 - make other text files editable/viewable with collaboration function
 - hook on CTRL+S and call `saveFile()`
 - file history (maybe [history](https://www.npmjs.com/package/history))
+- Use yjs for sharing
 ## License
 
 [MIT](./LICENSE) &copy; [Pravinthan Prabagaran](https://pravinthan.com).  
